@@ -1,10 +1,26 @@
 <template>
-<input v-model="updateTimer">
-<button @click="setTime">Set</button>
-<button @click="startTimer">Start</button>
-<button @click="resetTimer">Reset</button>
-<button @click="stopTimer">Stop</button>
-{{timer}}
+    <br>
+        Countdown Timer : {{timer}} SECONDS
+    <br>
+        <input v-model="updateTimer" placeholder="Set Time"><br>
+        <button @click="setTime">Set</button><br>
+        <button @click="startTimer">Start</button><br>
+        <button @click="resetTimer">Reset</button><br>
+        <button @click="stopTimer">Stop</button>
+    <br>
+    <br>
+        Timed Tasks
+        <form @submit.prevent="addTodo">
+            <input v-model="task" placeholder="Set Task">
+            <input v-model="time" placeholder="Set Time">
+            <button>Add Todo</button>
+        </form>
+    <ul>
+    <li v-for="todo in tasks" :key="todo.time">
+        {{todo.time}} Seconds to complete {{ todo.task}}
+        <button @click="removeTodo(todo)">X</button>
+    </li>
+    </ul>
 </template>
 
 <script>
@@ -13,15 +29,25 @@ export default{
         return{
         timer: 60,
         updateTimer: null,
-        id: ""
-    }
+        id: "",
+        task: '',
+        tasks: [],
+
+        }
     },
     methods:{
+      addTodo() {
+        this.tasks.push({ time: this.time, task: this.task, done: false })
+        this.task, this.time = '';
+    },
+    removeTodo(task) {
+        this.tasks = this.tasks.filter((t) => t !== task)
+    },
     resetTimer(){
         window.location.reload()
     },
     startTimer(){  
-      this.id = setInterval(() => this.countdownTime(), 1000);
+        this.id = setInterval(() => this.countdownTime(), 1000);
     },
     stopTimer(){
         clearInterval(this.id)
