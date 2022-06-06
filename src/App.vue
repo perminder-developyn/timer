@@ -1,28 +1,34 @@
 <template>
-    <br>
-        Countdown Timer : {{timer}} SECONDS
-    <br>
-        <input v-model="updateTimer" placeholder="Set Time"><br>
-        <button @click="setTime">Set</button><br>
-        <button @click="startTimer">Start</button><br>
-        <button @click="resetTimer">Reset</button><br>
-        <button @click="stopTimer">Stop</button>
-    <br>
-    <br>
-        Timed Tasks
-        <form @submit.prevent="addTodo">
-            <input v-model="task" placeholder="Set Task">
-            <input v-model="time" placeholder="Set Time">
-            <button>Add Todo</button>
-        </form>
+    <h1 v-if='tasks.length > 0'>
+        You have {{tasks.length}} tasks to complete
+    </h1>
+    <h1 v-else>
+        Please enter a task and time to begin
+    </h1>
+
+    <button @click='resetTimer'>Reset</button>
+    <button @click='stopTimer'>Stop</button>
+    <button @click='startTimer'>Start</button>
+
+    <input v-model='task' placeholder='Set Task'>
+    <input v-model='time' placeholder='Set Time'>
+
+    <button @click='addTodo'>Add Todo</button>
+    <p v-if='tryAgain'>please enter a time and task</p>
+
+    <h1 v-if='timer > 0'>
+        {{timer}} seconds remaining to complete {{currentTask.task}}
+    </h1>
+    <h1 v-else>
+        Begin a task
+    </h1>
     <ul>
-        <p v-if="hasStarted">
-            {{timer}} seconds remaining to complete {{currentTask.task}}
-        </p>
-        <li v-for="todo in tasks" :key="todo.time">
+        <li v-for='todo in tasks' :key='todo.time'>
+            <h2 v-if='todo.timer > 0'>
             {{todo.timer}} Seconds to : {{ todo.task}}
-            <button @click="removeTodo(todo)">X</button>
-            <button @click="startTask(todo)">Begin Task</button>
+            <button @click='removeTodo(todo)'>X</button>
+            <button @click='startTask(todo)'>Begin Task</button>
+            </h2>
         </li>
     </ul>
 </template>
@@ -31,59 +37,53 @@
 export default {
     data() {
         return {
-        timer: 60,
-        updateTimer: null,
-        id: "",
-        task: '',
-        tasks: [],
-        currentTask: {},
-        hasStarted: false
+            timer: 0,
+            id: '',
+            task: '',
+            tasks: [],
+            currentTask: {},
+            hasStarted: false,
+            tryAgain: false,
         }
     },
     methods: {
-    startTask(task) {
-        this.currentTask = task;
-        this.hasStarted = true;
-        this.timer = this.currentTask.timer;
-        this.startTimer();
+        startTask(task) {
+            this.currentTask = task;
+            this.hasStarted = true;
+            this.timer = this.currentTask.timer;
+            this.startTimer();
+        },
+        addTodo() {
+            this.tryAgain = false;
+            if (this.time && this.task) {
+                this.tasks.push({ timer: this.time, task: this.task, done: false });
+                this.task = '';
+                this.time = '';
+            } else {
+                this.tryAgain = true;
+            }
+        },
+        removeTodo(task) {
+            this.tasks = this.tasks.filter((t) => t !== task);
+        },
+        resetTimer() {
+            window.location.reload();
+        },
+        startTimer() {  
+            this.stopTimer();
+            this.id = setInterval(() => this.countdownTime(), 1000);
+        },
+        stopTimer() {
+            clearInterval(this.id);
+        },
+        countdownTime() {
+            if (this.timer > 0)
+                this.timer--;
+        },
+        setTime() {
+            this.stopTimer();
+            this.timer = this.updateTimer;
+        }
     },
-    addTodo() {
-        this.tasks.push({ timer: this.time, task: this.task, done: false });
-        this.task="";
-        this.time = "";
-    },
-    removeTodo(task) {
-        this.tasks = this.tasks.filter((t) => t !== task);
-    },
-    resetTimer() {
-        window.location.reload();
-    },
-    startTimer() {  
-        clearInterval(this.id)
-        this.id = setInterval(() => this.countdownTime(), 1000);
-    },
-    stopTimer() {
-        clearInterval(this.id);
-    },
-    countdownTime() {
-        if (this.timer > 0)
-        this.timer--;
-    },
-    setTime(){
-        this.stopTimer();
-        this.timer = this.updateTimer;
-    }
-    },
-    watch: {
-        updateTimer(value) {
-            console.log(value);
-        } 
-    }
-
 }
 </script>
-
-
-<style>
-
-</style>
