@@ -19,11 +19,11 @@
         <p v-if="hasStarted">
             {{timer}} seconds remaining to complete {{currentTask.task}}
         </p>
-    <li v-for="todo in tasks" :key="todo.time">
-        {{todo.timer}} Seconds to : {{ todo.task}}
-        <button @click="removeTodo(todo)">X</button>
-        <button @click="startTask(todo)">Begin Task</button>
-    </li>
+        <li v-for="todo in tasks" :key="todo.time">
+            {{todo.timer}} Seconds to : {{ todo.task}}
+            <button @click="removeTodo(todo)">X</button>
+            <button @click="startTask(todo)">Begin Task</button>
+        </li>
     </ul>
 </template>
 
