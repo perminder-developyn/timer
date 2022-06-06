@@ -59,6 +59,7 @@ export default {
         window.location.reload();
     },
     startTimer() {  
+        clearInterval(this.id)
         this.id = setInterval(() => this.countdownTime(), 1000);
     },
     stopTimer() {
